@@ -2,17 +2,19 @@ import moment from "moment/moment";
 import 'moment/locale/pt-br'
 import React, { Component } from "react";
 import { StyleSheet, View, Text, ImageBackground, TouchableOpacity} from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import commonStyles from "../commonStyles";
 import todayImage from '../assets/imgs/today.jpg'
 import Task from "../components/Task";
-import { FlatList } from "react-native-gesture-handler";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import AddTask from "./AddTask";
 
 export default class TaskList extends Component {
     state ={
         showDoneTasks: true,
         visibleTasks: [],
+        showAddTask: true,
         tasks:[
             {
                 id: Math.random(),
@@ -66,6 +68,10 @@ export default class TaskList extends Component {
 
         return(
             <View style={style.container}>
+                <AddTask 
+                    isVisible={this.state.showAddTask} 
+                    onCancel={() => this.setState({showAddTask: false})}
+                />
                 <ImageBackground source={todayImage} style={style.backgorund}>
                     <View style={style.iconBar}>
                         <TouchableOpacity onPress={this.toggleFilter}>
