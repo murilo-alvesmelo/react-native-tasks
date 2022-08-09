@@ -1,5 +1,7 @@
 export default {
     colors:{
-        secundary: '#FFF'
+        secundary: '#FFF',
+        mainText: 'gray',
+        subText: '#555'
     }
 }
