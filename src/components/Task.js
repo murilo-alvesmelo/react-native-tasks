@@ -20,7 +20,7 @@ function getCheckView(doneAt){
 export default props =>{
 
     const date = props.doneAt ? props.doneAt : props.estimatedAt
-    const formattedDate = moment().locale('pt-br').format('ddd, D [de] MMMM')
+    const formattedDate = moment(date).locale('pt-br').format('ddd, D [de] MMMM')
     const doneOrNotStyle =  props.doneAt != null ? 
         {textDecorationLine: 'line-through'} : {}
 
@@ -35,7 +35,7 @@ export default props =>{
             </TouchableWithoutFeedback>
             <View>
                 <Text style={[style.descricao, doneOrNotStyle]}>{props.desc}</Text>
-                <Text style={style.date}>{date}</Text>
+                <Text style={style.date}>{formattedDate}</Text>
             </View>
         </View>
     )

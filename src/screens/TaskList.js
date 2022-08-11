@@ -14,18 +14,18 @@ export default class TaskList extends Component {
     state ={
         showDoneTasks: true,
         visibleTasks: [],
-        showAddTask: true,
+        showAddTask: false,
         tasks:[
             {
                 id: Math.random(),
                 desc: "Passar no hotel",
-                estimatedAt: new Date().toISOString(),
-                doneAt: new Date().toISOString(),
+                estimatedAt: new Date(),
+                doneAt: new Date(),
             },
             {
                 id: Math.random(),
                 desc: "Estudar",
-                estimatedAt: new Date().toISOString(),
+                estimatedAt: new Date(),
                 doneAt: null,
             },
         ]
@@ -42,7 +42,7 @@ export default class TaskList extends Component {
         const tasks = [...this.state.tasks]
         tasks.forEach(task =>{
             if(task.id === taskId){
-                task.doneAt = task.doneAt ? null : new Date().toISOString()
+                task.doneAt = task.doneAt ? null : new Date()
             }
         })
 
@@ -90,6 +90,9 @@ export default class TaskList extends Component {
                         renderItem={({item}) => <Task {...item} toggleTask={this.toggleTask}/>}
                     />
                 </View>
+                <TouchableOpacity style={style.button} activeOpacity={0.7} onPress={() => this.setState({ showAddTask: true })}>
+                    <Icon name="plus" size={25} color={commonStyles.colors.secundary}/>
+                </TouchableOpacity>
             </View>
         )
     }
@@ -97,7 +100,7 @@ export default class TaskList extends Component {
 
 const style = StyleSheet.create({
     container:{
-        flex: 1
+        flex: 1,
     },
     backgorund:{
         flex: 3
@@ -127,5 +130,16 @@ const style = StyleSheet.create({
         alignItems: 'center',
         marginTop: 50,
         marginRight: 20
+    },
+    button:{
+        position: "absolute",
+        right: 30,
+        bottom: 30,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: commonStyles.colors.today,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 })

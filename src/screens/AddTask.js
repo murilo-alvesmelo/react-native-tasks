@@ -1,16 +1,42 @@
 import React, { Component } from "react";
-import { Modal, View, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Text} from "react-native";
+import { Platform, Modal, View, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Text } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { Button } from "@rneui/themed";
+import DateTimerPicker from '@react-native-community/datetimepicker'
+import moment from "moment/moment";
 
 import commonStyles from "../commonStyles";
 
-const initialState = {desc: ' '}
+const initialState = { desc: ' ', date: new Date(), showDatePicker: false}
 
 export default class AddTask extends Component{
 
     state = {
         ...initialState
+    }
+
+    getDateTimePicker = () =>{
+        let datePicker =  <DateTimerPicker
+                    style={style.dateIos}
+                    value={this.state.date}
+                    onChange={(_, date) => this.setState({ date, showDatePicker: false})}
+                    mode='date'
+                />
+
+            const dateAndroid = moment(this.state.date).format('ddd, D [de] MMMM [de] YYYY') 
+            if(Platform.OS === 'android'){
+                datePicker = (
+                    <View>
+                        <TouchableOpacity onPress={() => this.setState({ showDatePicker: true })}>
+                            <Text style={style.date}>
+                             {dateAndroid}    
+                            </Text>
+                        </TouchableOpacity>
+                        {this.state.showDatePicker && datePicker}
+                    </View>
+                )
+            }
+        return datePicker
     }
 
     render(){
@@ -28,13 +54,14 @@ export default class AddTask extends Component{
                 </TouchableWithoutFeedback>
                 <View style={style.container}>
                     <Text style={style.header}>Adicionar tarefa</Text>
-                    <Text>Tarefa: </Text>
+                    <Text style={style.subTitle}>Tarefa: </Text>
                     <TextInput 
                         style={style.textInput}
                         placeholder='Informe a descrição'
                         value={this.state.desc}
                         onChangeText={desc => this.setState({ desc })}
-                    ></TextInput>
+                    />
+                    {this.getDateTimePicker()}
                     <View style={style.buttons}>
                         <TouchableOpacity onPress={this.props.onCancel}>
                             <Text style={style.button}>Cancelar</Text>
@@ -69,6 +96,11 @@ const style = StyleSheet.create({
         textAlign: 'center',
         padding: 15
     },
+    subTitle:{
+        fontSize: 15,
+        marginLeft: 10,
+        padding: 5
+    },
     buttons:{
         flexDirection: 'row',
         justifyContent: "center",
@@ -84,5 +116,12 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5
+    },
+    date:{
+         fontSize: 20,
+         marginLeft: 15
+    },
+    dateIos:{
+        marginRight: 10
     }
 })
