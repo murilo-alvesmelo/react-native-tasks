@@ -1,9 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
-
+import { 
+    View, 
+    Text, 
+    StyleSheet, 
+    TouchableWithoutFeedback,
+    TouchableOpacity,
+} from "react-native";
+import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import commonStyles from "../commonStyles";
 import moment from "moment/moment";
-import { Icon } from "@rneui/themed";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function getCheckView(doneAt){
     if (doneAt != null){
@@ -24,20 +30,46 @@ export default props =>{
     const doneOrNotStyle =  props.doneAt != null ? 
         {textDecorationLine: 'line-through'} : {}
 
-    return(
-        <View style={style.container}>
-            <TouchableWithoutFeedback
-                onPress={() => props.toggleTask(props.id)}
-            >
-                <View style={style.checkContainer}>
-                    {getCheckView(props.doneAt)}
-                </View>
-            </TouchableWithoutFeedback>
-            <View>
-                <Text style={[style.descricao, doneOrNotStyle]}>{props.desc}</Text>
-                <Text style={style.date}>{formattedDate}</Text>
+    const getRightContent = () =>{
+        return(
+            <TouchableOpacity 
+            style={style.right} 
+            onPress={() => props.onDelete && props.onDelete(props.id)}>
+                <Icon name="trash" size={20} color='#FFF' />
+            </TouchableOpacity>
+        )
+    }
+    const getLefhtContent = () =>{
+        return(
+            <View style={style.lefth}>
+                <Icon name="trash" size={20} color='#FFF' style={style.excludIcon} />
+                <Text style={style.excludText}>Excluir</Text>
             </View>
-        </View>
+        )
+    }
+
+    return(
+        <GestureHandlerRootView>
+            <Swipeable 
+                renderRightActions={getRightContent}
+                renderLeftActions={getLefhtContent}
+                onSwipeableLeftOpen={() => props.onDelete && props.onDelete(props.id)}
+            >
+                <View style={style.container}>
+                    <TouchableWithoutFeedback
+                        onPress={() => props.toggleTask(props.id)}
+                        >
+                        <View style={style.checkContainer}>
+                            {getCheckView(props.doneAt)}
+                        </View>
+                    </TouchableWithoutFeedback>
+                    <View>
+                        <Text style={[style.descricao, doneOrNotStyle]}>{props.desc}</Text>
+                        <Text style={style.date}>{formattedDate}</Text>
+                    </View>
+                </View>
+            </Swipeable>
+        </GestureHandlerRootView>
     )
 }
 
@@ -47,7 +79,8 @@ const style = StyleSheet.create({
         borderColor: '#AAA',
         borderBottomWidth: 1,
         alignItems: 'center',
-        paddingVertical: 10
+        paddingVertical: 10,
+        backgroundColor: '#FFF'
     },
     checkContainer:{
         width: '20%',
@@ -76,5 +109,25 @@ const style = StyleSheet.create({
     },
     date:{
         color: commonStyles.colors.subText
+    },
+    right:{
+        backgroundColor: 'red',
+        flexDirection: "row",
+        alignItems: 'center',
+        paddingHorizontal: 20
+    },
+    lefth:{
+        backgroundColor: 'red',
+        flexDirection: "row",
+        alignItems: 'center',
+        flex: 1
+    },
+    excludText:{
+        color: '#FFF',
+        fontSize: 20,
+        margin: 10
+    },
+    excludIcon:{
+        marginLeft: 10
     }
 })

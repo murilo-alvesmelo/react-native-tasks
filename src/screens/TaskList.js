@@ -1,7 +1,14 @@
 import moment from "moment/moment";
 import 'moment/locale/pt-br'
 import React, { Component } from "react";
-import { StyleSheet, View, Text, ImageBackground, TouchableOpacity} from "react-native";
+import { 
+    StyleSheet, 
+    View, 
+    Text, 
+    ImageBackground, 
+    TouchableOpacity,
+    Alert,
+} from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -30,7 +37,7 @@ export default class TaskList extends Component {
             },
         ]
     }
-
+ 
     componentDidMount = () =>{
         this.filterTask()
     }
@@ -62,6 +69,28 @@ export default class TaskList extends Component {
 
         this.setState({ visibleTasks })
     }
+
+    addTask = newTask => {
+        if(!newTask.desc || !newTask.desc.trim()) {
+            Alert.alert('Dado Invalidos', 'Descrição não informada') 
+            return
+        }
+
+        const tasks = [...this.state.tasks]
+        tasks.push({
+            id: Math.random(),
+            desc: newTask.desc,
+            estimatedAt: newTask.date,
+            doneAt: null
+        })
+
+        this.setState({ tasks, showAddTask: false}, this.filterTask)
+    }
+
+    deleteTask = id =>{
+        const tasks = this.state.tasks.filter(tasks => tasks.id !== id)
+        this.setState({ tasks }, this.filterTask)
+    }
     render(){
 
         const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
@@ -71,6 +100,7 @@ export default class TaskList extends Component {
                 <AddTask 
                     isVisible={this.state.showAddTask} 
                     onCancel={() => this.setState({showAddTask: false})}
+                    onSave={this.addTask}
                 />
                 <ImageBackground source={todayImage} style={style.backgorund}>
                     <View style={style.iconBar}>
@@ -87,7 +117,7 @@ export default class TaskList extends Component {
                     <FlatList
                         data={this.state.visibleTasks}
                         keyExtractor={item => `${item.id}`}
-                        renderItem={({item}) => <Task {...item} toggleTask={this.toggleTask}/>}
+                        renderItem={({item}) => <Task {...item} toggleTask={this.toggleTask} onDelete={this.deleteTask}/>}
                     />
                 </View>
                 <TouchableOpacity style={style.button} activeOpacity={0.7} onPress={() => this.setState({ showAddTask: true })}>
