@@ -11,35 +11,29 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import commonStyles from "../commonStyles";
 import todayImage from '../assets/imgs/today.jpg'
 import Task from "../components/Task";
 import AddTask from "./AddTask";
 
+
+const initialState = {
+    showDoneTasks: true,
+    visibleTasks: [],
+    showAddTask: false,
+    tasks: []
+}
 export default class TaskList extends Component {
     state ={
-        showDoneTasks: true,
-        visibleTasks: [],
-        showAddTask: false,
-        tasks:[
-            {
-                id: Math.random(),
-                desc: "Passar no hotel",
-                estimatedAt: new Date(),
-                doneAt: new Date(),
-            },
-            {
-                id: Math.random(),
-                desc: "Estudar",
-                estimatedAt: new Date(),
-                doneAt: null,
-            },
-        ]
+        ...initialState
     }
  
-    componentDidMount = () =>{
-        this.filterTask()
+    componentDidMount = async () =>{
+        const response = await AsyncStorage.getItem('tasksState')
+        const state = JSON.parse(response) || initialState
+        this.setState(state, this.filterTask)
     }
 
     toggleFilter = () =>{
@@ -68,6 +62,7 @@ export default class TaskList extends Component {
         }
 
         this.setState({ visibleTasks })
+        AsyncStorage.setItem('tasksState', JSON.stringify(this.state))
     }
 
     addTask = newTask => {
