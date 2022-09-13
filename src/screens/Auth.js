@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Component } from "react";
 import { 
     ImageBackground, 
@@ -5,13 +6,16 @@ import {
     StyleSheet, 
     TextInput, 
     View,
-    TouchableOpacity, 
-    Platform,
+    TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
     Alert} from "react-native";
+
 import backgorundImage from '../assets/imgs/login.jpg'
+import { server, showError, showSuccess } from "../common";
 import commonStyles from "../commonStyles";
+import AuthInput from "../components/AuthInput";
+import api from "../service/api";
 
 export default class Auth extends Component {
     state={
@@ -24,9 +28,29 @@ export default class Auth extends Component {
 
     signinOrSignup = () =>{
         if(this.state.newUser){
-            Alert.alert('Sucesso!', 'Criar Conta')
+            this.findUsers()
         }else{
             Alert.alert('Sucesso!', 'Logar')
+        }
+    }
+
+    findUsers = async()=>{
+        const response = await api.get('/users')
+        console.log(response.data)
+    }
+    signup = async() =>{
+        try{
+            await api.post('/signup', {
+                name: this.state.name,
+                email: this.state.email,
+                password: this.state.password,
+                confirmPassword: this.state.confirmPassword
+            })
+            showSuccess('Usuário cadastrado!')
+            this.setState({newUser: false})
+        }catch(err){
+             showError(err)
+             console.log(this.state)
         }
     }
     render(){
@@ -41,20 +65,23 @@ export default class Auth extends Component {
                         {this.state.newUser ? "Crie a sua conta" : "Informe seus dados"}
                     </Text>
                     {this.state.newUser && 
-                       <TextInput 
+                       <AuthInput
+                       icon='user' 
                        placeholder="Nome:" 
                        value={this.state.name}
                        style={styles.input}
                        onChangeText={name => this.setState({name})}
                         /> 
                     }
-                    <TextInput 
+                    <AuthInput  
+                        icon='at'
                         placeholder="Email:" 
                         value={this.state.email}
                         style={styles.input}
                         onChangeText={email => this.setState({email})}
                     />
-                    <TextInput 
+                    <AuthInput 
+                        icon='lock'
                         placeholder="Senha:" 
                         secureTextEntry={true}
                         value={this.state.password}
@@ -62,8 +89,10 @@ export default class Auth extends Component {
                         onChangeText={password => this.setState({password})}
                     />
                     {this.state.newUser && 
-                       <TextInput 
+                       <AuthInput 
+                       icon='lock'
                        placeholder="Confirmar senha:" 
+                       secureTextEntry={true}
                        value={this.state.confirmPassword}
                        style={styles.input}
                        onChangeText={ confirmPassword=> this.setState({confirmPassword})}
@@ -116,10 +145,10 @@ const styles = StyleSheet.create({
     input:{
         marginTop: 10,
         backgroundColor: '#FFF',
-        padding: Platform.OS == 'ios'? 10: 0
     },
     button:{
         backgroundColor: '#080',
+        borderRadius: 25,
         marginTop: 20,
         padding: 10,
         alignItems: 'center',
