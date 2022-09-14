@@ -10,6 +10,7 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     Alert} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 import backgorundImage from '../assets/imgs/login.jpg'
 import { server, showError, showSuccess } from "../common";
@@ -17,27 +18,45 @@ import commonStyles from "../commonStyles";
 import AuthInput from "../components/AuthInput";
 import api from "../service/api";
 
+
+const initialState ={
+    email: '',
+    password: '',
+    name: '',
+    confirmPassword: '',
+    newUser: false
+}
+
 export default class Auth extends Component {
     state={
-        email: '',
-        password: '',
-        name: '',
-        confirmPassword: '',
-        newUser: true
+        ...initialState
     }
 
     signinOrSignup = () =>{
         if(this.state.newUser){
-            this.findUsers()
+            this.signup()
         }else{
-            Alert.alert('Sucesso!', 'Logar')
+            this.signin() 
         }
     }
 
-    findUsers = async()=>{
-        const response = await api.get('/users')
-        console.log(response.data)
+    signin = async() =>{
+        try {
+            const response = await api.post('/login', {
+                email: this.state.email,
+                password: this.state.password
+            })
+
+            api.defaults.headers.common['Authorization'] = `${response.data.token}`
+            
+            const navigation = useNavigation()
+
+            navigation.navigate('Home')
+        } catch (error) {
+            showError(error)
+        }
     }
+
     signup = async() =>{
         try{
             await api.post('/signup', {
@@ -47,10 +66,9 @@ export default class Auth extends Component {
                 confirmPassword: this.state.confirmPassword
             })
             showSuccess('Usuário cadastrado!')
-            this.setState({newUser: false})
+            this.setState({ ...initialState })
         }catch(err){
              showError(err)
-             console.log(this.state)
         }
     }
     render(){
