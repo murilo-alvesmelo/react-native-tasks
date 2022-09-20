@@ -25,7 +25,7 @@ const initialState = {
     showAddTask: false,
     tasks: []
 }
-export default class TaskList extends Component {
+export default class TaskList extends React.Component {
     state ={
         ...initialState
     }
@@ -89,7 +89,7 @@ export default class TaskList extends Component {
     render(){
 
         const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
-
+        
         return(
             <View style={style.container}>
                 <AddTask 

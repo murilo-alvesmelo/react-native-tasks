@@ -10,14 +10,11 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     Alert} from "react-native";
-import { useNavigation } from '@react-navigation/native';
-
 import backgorundImage from '../assets/imgs/login.jpg'
 import { server, showError, showSuccess } from "../common";
 import commonStyles from "../commonStyles";
 import AuthInput from "../components/AuthInput";
 import api from "../service/api";
-
 
 const initialState ={
     email: '',
@@ -27,7 +24,7 @@ const initialState ={
     newUser: false
 }
 
-export default class Auth extends Component {
+export default class Auth extends React.Component {
     state={
         ...initialState
     }
@@ -48,10 +45,8 @@ export default class Auth extends Component {
             })
 
             api.defaults.headers.common['Authorization'] = `${response.data.token}`
-            
-            const navigation = useNavigation()
 
-            navigation.navigate('Home')
+            this.props.navigation.navigate('Home')
         } catch (error) {
             showError(error)
         }
