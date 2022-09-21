@@ -44,7 +44,7 @@ export default class Auth extends React.Component {
                 password: this.state.password
             })
 
-            api.defaults.headers.common['Authorization'] = `${response.data.token}`
+            api.defaults.headers.common['Authorization'] = `bearer ${response.data.token}`
 
             this.props.navigation.navigate('Home')
         } catch (error) {
@@ -67,6 +67,17 @@ export default class Auth extends React.Component {
         }
     }
     render(){
+        const validations = []
+        validations.push(this.state.email && this.state.email.includes('@'))
+        validations.push(this.state.password && this.state.password.length >= 6)
+
+        if(this.state.newUser){
+            validations.push(this.state.name && this.state.name.trim().length>=3)
+            validations.push(this.state.password === this.state.confirmPassword)
+        }
+
+        const validForm = validations.reduce((t, a) => t && a)
+
         return(
             <TouchableWithoutFeedback onPress={() =>{
                 Keyboard.dismiss()
@@ -111,8 +122,11 @@ export default class Auth extends React.Component {
                        onChangeText={ confirmPassword=> this.setState({confirmPassword})}
                         /> 
                     }
-                    <TouchableOpacity onPress={this.signinOrSignup}>
-                        <View style={styles.button}>
+                    <TouchableOpacity 
+                        onPress={this.signinOrSignup}
+                        disabled={!validForm}
+                    >
+                        <View style={[styles.button, validForm ? {} :{backgroundColor: '#AAA'}]}>
                             <Text style={styles.buttonText}>
                                 {this.state.newUser ? "Registrar": "Entrar"}
                             </Text>

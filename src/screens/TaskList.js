@@ -13,6 +13,8 @@ import { FlatList } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { showError, showSuccess } from "../common";
+import api from "../service/api";
 import commonStyles from "../commonStyles";
 import todayImage from '../assets/imgs/today.jpg'
 import Task from "../components/Task";
@@ -32,8 +34,20 @@ export default class TaskList extends React.Component {
  
     componentDidMount = async () =>{
         const response = await AsyncStorage.getItem('tasksState')
-        const state = JSON.parse(response) || initialState
-        this.setState(state, this.filterTask)
+        const savedState = JSON.parse(response) || initialState
+        this.setState({showDoneTasks: savedState.showDoneTasks}, this.filterTask)
+
+        this.loadTasks()
+    }
+
+    loadTasks = async () =>{
+        try {
+            const maxDate = moment().format('YYYY-MM-DD 23:59:59')
+            const response = await api.get(`/tasks?date=${maxDate}`)
+            this.setState({tasks: response.data}, this.filterTask)
+        } catch (error) {
+            showError(error)
+        }
     }
 
     toggleFilter = () =>{
@@ -62,7 +76,9 @@ export default class TaskList extends React.Component {
         }
 
         this.setState({ visibleTasks })
-        AsyncStorage.setItem('tasksState', JSON.stringify(this.state))
+        AsyncStorage.setItem('tasksState', JSON.stringify({
+            showDoneTasks: this.state.showDoneTasks
+        }))
     }
 
     addTask = newTask => {
