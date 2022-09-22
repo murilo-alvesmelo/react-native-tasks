@@ -53,15 +53,13 @@ export default class TaskList extends React.Component {
     toggleFilter = () =>{
         this.setState({ showDoneTasks: !this.state.showDoneTasks}, this.filterTask)
     }
-    toggleTask = taskId =>{
-        const tasks = [...this.state.tasks]
-        tasks.forEach(task =>{
-            if(task.id === taskId){
-                task.doneAt = task.doneAt ? null : new Date()
-            }
-        })
-
-        this.setState({ tasks }, this.filterTask)
+    toggleTask = async taskId =>{
+        try {
+            await api.put(`/tasks/${taskId}`)
+            this.loadTasks()
+        } catch (error) {
+            showError(error)
+        }
     }
 
     filterTask = () =>{
@@ -81,26 +79,33 @@ export default class TaskList extends React.Component {
         }))
     }
 
-    addTask = newTask => {
+    addTask = async newTask => {
         if(!newTask.desc || !newTask.desc.trim()) {
             Alert.alert('Dado Invalidos', 'Descrição não informada') 
             return
         }
 
-        const tasks = [...this.state.tasks]
-        tasks.push({
-            id: Math.random(),
-            desc: newTask.desc,
-            estimatedAt: newTask.date,
-            doneAt: null
-        })
+        try {
+            await api.post('/tasks',{
+                desc: newTask.desc,
+                estimatedAt: newTask.date,
+                doneAt: null
+            })
+            
+            this.setState({showAddTask: false}, this.loadTasks)
+        } catch (error) {
+            showError(error)
+        }
 
-        this.setState({ tasks, showAddTask: false}, this.filterTask)
     }
 
-    deleteTask = id =>{
-        const tasks = this.state.tasks.filter(tasks => tasks.id !== id)
-        this.setState({ tasks }, this.filterTask)
+    deleteTask = async id =>{
+        try {
+            await api.delete(`/tasks/${id}`)
+            this.loadTasks()
+        } catch (error) {
+            showError(error)
+        }
     }
     render(){
 
@@ -120,7 +125,7 @@ export default class TaskList extends React.Component {
                         </TouchableOpacity>
                     </View>
                     <View style={style.titleBar}>
-                        <Text style={style.title}>Hoje</Text>
+                        <Text style={style.title}>{this.props.title}</Text>
                         <Text style={style.subtittle}>{today}</Text>
                     </View>
                 </ImageBackground>
@@ -144,7 +149,7 @@ const style = StyleSheet.create({
         flex: 1,
     },
     backgorund:{
-        flex: 3
+        flex: 3,
     },
     taskList:{
         flex: 7
