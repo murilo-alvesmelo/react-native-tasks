@@ -17,8 +17,11 @@ import { showError, showSuccess } from "../common";
 import api from "../service/api";
 import commonStyles from "../commonStyles";
 import todayImage from '../assets/imgs/today.jpg'
+import weekImage from '../assets/imgs/week.jpg'
+import monthImage from '../assets/imgs/month.jpg'
 import Task from "../components/Task";
 import AddTask from "./AddTask";
+import { DrawerActions } from "@react-navigation/native";
 
 
 const initialState = {
@@ -42,7 +45,9 @@ export default class TaskList extends React.Component {
 
     loadTasks = async () =>{
         try {
-            const maxDate = moment().format('YYYY-MM-DD 23:59:59')
+            const maxDate = moment()
+                .add({days: this.props.daysAhead})
+                .format('YYYY-MM-DD 23:59:59')
             const response = await api.get(`/tasks?date=${maxDate}`)
             this.setState({tasks: response.data}, this.filterTask)
         } catch (error) {
@@ -107,10 +112,27 @@ export default class TaskList extends React.Component {
             showError(error)
         }
     }
+
+    getImage = () =>{
+        switch(this.props.daysAhead){
+            case 0: return todayImage
+            case 7: return weekImage
+            default : return monthImage 
+        }
+    } 
+
+    getColor = () =>{
+        switch(this.props.daysAhead){
+            case 0: return commonStyles.colors.today
+            case 7: return commonStyles.colors.week
+            default : return commonStyles.colors.month
+        }
+    } 
+
     render(){
 
         const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
-        
+
         return(
             <View style={style.container}>
                 <AddTask 
@@ -118,8 +140,13 @@ export default class TaskList extends React.Component {
                     onCancel={() => this.setState({showAddTask: false})}
                     onSave={this.addTask}
                 />
-                <ImageBackground source={todayImage} style={style.backgorund}>
+                <ImageBackground source={this.getImage()} style={style.backgorund}>
                     <View style={style.iconBar}>
+                        <TouchableOpacity 
+                            onPress={() => this.props.navigation.dispatch(DrawerActions.openDrawer())}
+                        >
+                            <Icon name='bars' size={25} color="#FFF"/>
+                        </TouchableOpacity>
                         <TouchableOpacity onPress={this.toggleFilter}>
                             <Icon name={this.state.showDoneTasks ? 'eye' : 'eye-slash'} size={25} color="#FFF"/>
                         </TouchableOpacity>
@@ -136,7 +163,11 @@ export default class TaskList extends React.Component {
                         renderItem={({item}) => <Task {...item} toggleTask={this.toggleTask} onDelete={this.deleteTask}/>}
                     />
                 </View>
-                <TouchableOpacity style={style.button} activeOpacity={0.7} onPress={() => this.setState({ showAddTask: true })}>
+                <TouchableOpacity 
+                style={[style.button, {backgroundColor: this.getColor()}]} 
+                activeOpacity={0.7} 
+                onPress={() => this.setState({ showAddTask: true })}
+                >
                     <Icon name="plus" size={25} color={commonStyles.colors.secundary}/>
                 </TouchableOpacity>
             </View>
@@ -172,10 +203,10 @@ const style = StyleSheet.create({
     },
     iconBar:{
         flexDirection: 'row',
-        justifyContent: "flex-end",
+        justifyContent: "space-between",
         alignItems: 'center',
         marginTop: 50,
-        marginRight: 20
+        margin: 10
     },
     button:{
         position: "absolute",
