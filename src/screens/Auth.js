@@ -77,7 +77,7 @@ export default class Auth extends React.Component {
         }
 
         const validForm = validations.reduce((t, a) => t && a)
-
+        
         return(
             <TouchableWithoutFeedback onPress={() =>{
                 Keyboard.dismiss()
