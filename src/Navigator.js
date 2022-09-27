@@ -2,19 +2,27 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
-import week from '../src/assets/imgs/week.jpg'
+import Menu from "./screens/Menu";
 import TaskList from "./screens/TaskList";
 import Auth from "./screens/Auth";
-import { TouchableOpacity, Text } from "react-native";
+
 
 const Drawer = createDrawerNavigator();
 
 class MyDrawer extends React.Component{
     render(){
         return(
-            <Drawer.Navigator initialRouteName="Hoje">
+            <Drawer.Navigator 
+                drawerContent={Menu}
+                initialRouteName='Hoje'
+                screenOptions={{
+                    drawerLabelStyle: {
+                        fontWeight: 'normal',
+                        fontSize: 20
+                    },
+                }}
+            >
                 <Drawer.Screen name="Hoje" options={{headerShown: false}}>
                     {()=> <TaskList title='Hoje' daysAhead={0} {...this.props}/>}
                 </Drawer.Screen>
@@ -53,3 +61,11 @@ class Navigator extends React.Component{
 
 
 export default Navigator;
+
+/* initialRouteName='Hoje'
+            screenOptions={{
+                drawerLabelStyle:{
+                    fontWeight: 'normal',
+                    fontSize: 20
+                }
+            }} */
