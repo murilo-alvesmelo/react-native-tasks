@@ -46,7 +46,7 @@ export default class Auth extends React.Component {
 
             api.defaults.headers.common['Authorization'] = `bearer ${response.data.token}`
 
-            this.props.navigation.navigate('Home')
+            this.props.navigation.navigate('Home', response.data)
         } catch (error) {
             showError(error)
         }
