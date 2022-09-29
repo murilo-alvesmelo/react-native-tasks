@@ -3,17 +3,19 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
-import Menu from "./screens/Menu";
 import TaskList from "./screens/TaskList";
 import Auth from "./screens/Auth";
+import Menu from "./screens/Menu";
+import AuthOrApp from "./screens/AuthOrApp";
 
 
 const Drawer = createDrawerNavigator();
 
 class MyDrawer extends React.Component{
     render(){
+        const email = this.props.route.params
         return(
-            <Drawer.Navigator 
+            <Drawer.Navigator
                 drawerContent={Menu}
                 initialRouteName='Hoje'
                 screenOptions={{
@@ -21,9 +23,10 @@ class MyDrawer extends React.Component{
                         fontWeight: 'normal',
                         fontSize: 20
                     },
+                    
                 }}
             >
-                <Drawer.Screen name="Hoje" options={{headerShown: false}}>
+                <Drawer.Screen name='Hoje' options={{headerShown: false}}>
                     {()=> <TaskList title='Hoje' daysAhead={0} {...this.props}/>}
                 </Drawer.Screen>
                 <Drawer.Screen name="Semana" options={{headerShown: false}}>
@@ -43,7 +46,12 @@ class Navigator extends React.Component{
     render(){
         return(
             <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator initialRouteName="AuthOrApp">
+                    <Stack.Screen
+                        name="AuthOrApp"
+                        component={AuthOrApp}
+                        options={{headerShown: false}}
+                    />
                     <Stack.Screen 
                         name="Auth" 
                         component={Auth} 
@@ -52,7 +60,8 @@ class Navigator extends React.Component{
                     <Stack.Screen 
                         name="Home" 
                         component={MyDrawer} 
-                        options={{headerShown: false}}/>
+                        options={{headerShown: false}}
+                        />
                 </Stack.Navigator>
             </NavigationContainer>
         )
