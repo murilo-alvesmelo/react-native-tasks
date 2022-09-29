@@ -10,6 +10,9 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     Alert} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 import backgorundImage from '../assets/imgs/login.jpg'
 import { server, showError, showSuccess } from "../common";
 import commonStyles from "../commonStyles";
@@ -43,8 +46,11 @@ export default class Auth extends React.Component {
                 email: this.state.email,
                 password: this.state.password
             })
-
+            
+            AsyncStorage.setItem('userData', JSON.stringify(response.data))
+            
             api.defaults.headers.common['Authorization'] = `bearer ${response.data.token}`
+
 
             this.props.navigation.navigate('Home', response.data)
         } catch (error) {
