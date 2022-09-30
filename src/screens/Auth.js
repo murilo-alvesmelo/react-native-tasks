@@ -20,8 +20,8 @@ import AuthInput from "../components/AuthInput";
 import api from "../service/api";
 
 const initialState ={
-    email: 'murilo.melo@gmail.com',
-    password: '123456',
+    email: '',
+    password: '',
     name: '',
     confirmPassword: '',
     newUser: false

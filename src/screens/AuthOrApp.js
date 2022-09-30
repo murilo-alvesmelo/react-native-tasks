@@ -1,25 +1,25 @@
-import React from "react";
+import React, {Component} from "react";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../service/api";
 import { showError } from "../common";
 
-export default class AuthOrApp extends React.Component{
+export default class AuthOrApp extends Component{
     componentDidMount= async()=>{
         const userDataJson = await AsyncStorage.getItem('userData')
         let userData = null
         try {
             userData = JSON.parse(userDataJson)
         } catch (error) {
-            showError(error)
+            //userData inválido
         }
 
         if(userData && userData.token){
             api.defaults.headers.common['Authorization'] = `bearer ${userData.token}`
 
-            this.props.navigation.navigate('Auth')
+            this.props.navigation.navigate('Home', userData)
         }else{
-            this.props.navigation.navigate('Auth', userData)
+            this.props.navigation.navigate('Auth')
         }
     }
 
