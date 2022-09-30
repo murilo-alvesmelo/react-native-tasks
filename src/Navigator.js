@@ -46,7 +46,7 @@ class Navigator extends React.Component{
     render(){
         return(
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="AuthOrApp">
+                <Stack.Navigator>
                     <Stack.Screen
                         name="AuthOrApp"
                         component={AuthOrApp}

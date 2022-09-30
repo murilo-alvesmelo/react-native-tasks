@@ -11,7 +11,7 @@ export default props =>{
         delete api.defaults.headers.common['Authorization']
         AsyncStorage.removeItem('userData')
 
-        props.navigation.navigate('AuthOrApp')
+        props.navigation.navigate('Auth')
     }
     return(
         <DrawerContentScrollView {...props}>
