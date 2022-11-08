@@ -22,7 +22,6 @@ export default props =>{
                 </TouchableOpacity>
             </View>
             <DrawerItemList {...props}/>
-            <DrawerItem label='Log out'/>
         </DrawerContentScrollView>
     )
 }
